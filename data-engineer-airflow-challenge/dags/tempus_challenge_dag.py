@@ -24,10 +24,18 @@ dag = DAG(
     catchup=False,
 )
 
-get_en_news_headlines = PythonOperator(
-    task_id='get_en_news_headlines',
+get_en_news_sources = PythonOperator(
+    task_id='get_en_news_sources',
     provide_context=True,
-    python_callable=c.NewsAPI.callable,
+    python_callable=c.get_sources,
+    params={'language': 'en'},
+    dag=dag
+)
+
+save_headlines = PythonOperator(
+    task_id='save_headlines',
+    provide_context=True,
+    python_callable=c.save_headlines,
     dag=dag
 )
 
@@ -36,4 +44,5 @@ end = DummyOperator(
     dag=dag
 )
 
-get_en_news_headlines.set_downstream(end)
+get_en_news_sources.set_downstream(save_headlines)
+save_headlines.set_downstream(end)
