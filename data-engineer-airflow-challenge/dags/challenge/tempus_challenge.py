@@ -113,7 +113,7 @@ def save_headlines(**kwargs):
     sources = kwargs['task_instance'].xcom_pull(task_ids='get_en_news_sources')
 
     if not sources:
-        logging.error('Integration between tasks failed from get_sources.')
+        logging.error('Integration between tasks failed from get_sources() to save_headlines().')
         exit(4)
 
     headlines = []
