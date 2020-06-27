@@ -10,3 +10,9 @@
 
 # System Files
 .DS_Store
+
+# Environment files
+*.coverage
+*.idea/
+*.pytest_cache
+venv/
