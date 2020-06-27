@@ -78,6 +78,11 @@ class NewsAPI:
         self.key_params = {'apiKey': NEWS_API_KEY}
 
     def get_query_params(self, additional_params) -> dict:
+        """
+        Query parameter builder pattern. Always uses the apiKey as base
+        :param additional_params:
+        :return: all parameters in on dictionary
+        """
         query_params = dict()
         query_params.update(self.key_params)
         if additional_params:
