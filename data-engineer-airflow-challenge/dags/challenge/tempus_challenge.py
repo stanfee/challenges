@@ -4,11 +4,12 @@ import json
 import logging
 import boto3
 import pandas as pd
+from airflow.models import Variable
 
-NEWS_API_KEY = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
-AWS_ACCESS_KEY_ID = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
-AWS_SECRET_ACCESS_KEY = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
-S3_BUCKET = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+NEWS_API_KEY = Variable.get('NEWS_API_KEY')
+AWS_ACCESS_KEY_ID = Variable.get('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = Variable.get('AWS_SECRET_ACCESS_KEY')
+S3_BUCKET = Variable.get('S3_BUCKET')
 
 
 def string_to_s3(content: str, s3_location: str):
@@ -35,9 +36,9 @@ def string_to_s3(content: str, s3_location: str):
         exit(1)
 
 
-def flatten_json(json_data):
+def flatten_json(json_data) -> dict or list:
     """
-    Helper function for flatten JSON
+    Helper function for flatten JSON. Works on the headline or any other JSON object
     :param json_data: well formatted JSON
     :return: json_data (param) as a one dimensional dictionary
     """
@@ -51,7 +52,7 @@ def flatten_json(json_data):
             i = 0
             for field in current_obj:
                 flatten(field, name + str(i) + '.')
-            i += 1
+                i += 1
         else:
             out[name[:-1]] = current_obj
     flatten(json_data)
@@ -76,14 +77,14 @@ class NewsAPI:
         self.headlines_url = self.api_base_url + 'top-headlines'
         self.key_params = {'apiKey': NEWS_API_KEY}
 
-    def get_query_params(self, additional_params):
+    def get_query_params(self, additional_params) -> dict:
         query_params = dict()
         query_params.update(self.key_params)
         if additional_params:
             query_params.update(additional_params)
         return query_params
 
-    def json_to_dict(self, json_obj):
+    def json_to_dict(self, json_obj) -> dict:
         """
         Attempt to convert JSON into a dictionary
         :param json_obj: JSON object
@@ -96,7 +97,7 @@ class NewsAPI:
             logging.error(e)
             exit(3)
 
-    def get_source_ids(self, additional_params: dict):
+    def get_source_ids(self, additional_params: dict) -> list:
         """
         Pull from the /sources API based on any valid additional parameters
         :param additional_params:
